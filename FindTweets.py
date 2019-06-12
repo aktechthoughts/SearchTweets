@@ -2,6 +2,7 @@
 
 ################################################################################
 import tweepy
+import json
 import argparse
 
 ################################################################################
@@ -21,17 +22,20 @@ if __name__ == "__main__":
     if args.text is None:
         raise Exception("Required arguments: text")
     else:
-        consumer_key = input("Enter Consumer Key : ")
-        consumer_secret = input("Enter Consumer Secret : ")
+        with open("../TweetAccess.cfg") as data_file:
+            tweet_config = json.load(data_file)
 
-        access_token = input("Enter Access Token : ")
-        access_token_secret = input("Enter Access Token Secret : ")
+        consumer_key = tweet_config["consumer_key"]
+        consumer_secret = tweet_config["consumer_secret"]
 
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
+        access_token = tweet_config["access_token"]
+        access_token_secret = tweet_config["access_token_secret"]
 
-    api = tweepy.API(auth)
+        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        auth.set_access_token(access_token, access_token_secret)
 
-    public_tweets = api.home_timeline()
-    for tweet in public_tweets:
-        print(tweet.text)
+        api = tweepy.API(auth)
+
+        public_tweets = api.home_timeline()
+        for tweet in public_tweets:
+            print(tweet.text)
