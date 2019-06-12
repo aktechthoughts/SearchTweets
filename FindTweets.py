@@ -1,11 +1,29 @@
 #!/usr/bin/python
 
 ################################################################################
-import tweepy
-import json
 import argparse
+from tweepy import Stream
+from tweepy.streaming import StreamListener
 
 ################################################################################
+
+
+class TweetListener(StreamListener):
+
+    def on_data(self, data):
+        try:
+            with open('../tweets.json', 'a') as f:
+                f.write(data)
+                return True
+        except BaseException as e:
+            print("Error on_data: %s" % str(e))
+        return True
+
+    def on_error(self, status):
+        print(status)
+        return True
+
+
 if __name__ == "__main__":
 
     # parse arguments
@@ -13,12 +31,7 @@ if __name__ == "__main__":
     parser.add_argument('text', help="Tweet Text to Search")
     args = parser.parse_args()
 
-    consumer_key = None
-    consumer_secret = None
-    access_token = None
-    access_token_secret = None
 
-    # check is function is missing
     if args.text is None:
         raise Exception("Required arguments: text")
     else:
@@ -34,8 +47,6 @@ if __name__ == "__main__":
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
         auth.set_access_token(access_token, access_token_secret)
 
-        api = tweepy.API(auth)
+        twitter_stream = Stream(auth, TweetListener())
+        twitter_stream.filter(track=[args.text])
 
-        public_tweets = api.home_timeline()
-        for tweet in public_tweets:
-            print(tweet.text)
