@@ -1,7 +1,7 @@
+
 import tweepy
 import json
-import csv
-import urllib
+import argparse
 
 outputfile = "../TweetStream.json"
 
