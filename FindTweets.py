@@ -1,13 +1,29 @@
-#!/usr/bin/python
 
-################################################################################
 import tweepy
 import json
 import argparse
 
-################################################################################
+outputfile = "../TweetStream.json"
 
-if __name__ == "__main__":
+# This is the listener, resposible for receiving data
+class TweetListener(tweepy.StreamListener):
+    def on_data(self, data):
+        # Twitter returns data in JSON format - we need to decode it first
+        decoded = json.loads(data)
+        try:
+            with open(outputfile, 'a') as f:
+                f.write(data)
+                return True
+        except (NameError, KeyError,AttributeError):
+             pass
+
+        return True
+    def on_error(self, status):
+        print status
+
+        return True
+
+if __name__ == '__main__':
 
     # parse arguments
     parser = argparse.ArgumentParser(description='Argument for Tweet Text')
@@ -35,8 +51,7 @@ if __name__ == "__main__":
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
         auth.set_access_token(access_token, access_token_secret)
 
-        api = tweepy.API(auth)
+        tweet_listener = TweetListener()
 
-        public_tweets = api.home_timeline()
-        for tweet in public_tweets:
-            print(tweet.text)
+        stream = tweepy.Stream(auth, tweet_listener)
+        stream.filter(track=[args.text])
