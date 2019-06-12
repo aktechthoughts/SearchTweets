@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 ################################################################################
+import tweepy
 import argparse
 import json
 from tweepy import Stream
