@@ -3,7 +3,7 @@ import tweepy
 import json
 import argparse
 
-outputfile = "../TweetStream.json"
+outputfile = "TweetOut/TweetStream.json"
 
 # This is the listener, resposible for receiving data
 class TweetListener(tweepy.StreamListener):
@@ -30,16 +30,16 @@ if __name__ == '__main__':
     parser.add_argument('text', help="Tweet Text to Search")
     args = parser.parse_args()
 
-    consumer_key = None
+    consumer_key = None 
     consumer_secret = None
-    access_token = None
+    access_token = None 
     access_token_secret = None
 
     # check is function is missing
     if args.text is None:
         raise Exception("Required arguments: text")
     else:
-        with open("../TweetAccess.cfg") as data_file:
+        with open("TwitterConfig/TweetAccess.cfg") as data_file:
             tweet_config = json.load(data_file)
 
         consumer_key = tweet_config["consumer_key"]
